@@ -26,7 +26,7 @@ class _BooksAppState extends State<BooksApp> {
   @override
   Widget build(BuildContext context) {
 
-    /// `Page`
+    /// ## `Page`
     ///
     /// 當 `Page` 列表有變動，`Navigator` 會更新路徑的堆疊、符合 (match) 路徑
     ///
@@ -47,11 +47,29 @@ class _BooksAppState extends State<BooksApp> {
         )
     ];
 
+    /// ## `onPopPage`
+    ///
+    /// 會在呼叫 `Navigator.pop()` 之後被呼叫
+    bool onPopPage(Route<dynamic> route, result) {
+      // 1. `didPop` return true if the pop succeeded
+      // 2. It’s important to check whether didPop fails before updating the app state.
+      if (!route.didPop(result)) {
+        return false;
+      }
+
+      // Update the list of pages by setting _selectedBook to null
+      setState(() {
+        _selectedBook = null;
+      });
+
+      return true;
+    }
+
     return MaterialApp(
       title: 'Books App',
       home: Navigator(
         pages: pages,
-        onPopPage: (route, result) => route.didPop(result),
+        onPopPage: onPopPage,
       ),
     );
   }
