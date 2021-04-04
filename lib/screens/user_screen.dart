@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_navigation_practice_1/core/authentication/authentication_manager.dart';
 import 'package:flutter_navigation_practice_1/screens/base_screen.dart';
 
 class UserScreen extends StatefulWidget {
@@ -57,7 +58,7 @@ class _UserScreenState extends BaseScreenState<UserScreen> {
 
   @override
   PreferredSizeWidget buildAppBar(BuildContext context) {
-    return (authViewModel.isLoggedIn)
+    return (AuthenticationManager.instance.isLoggedIn)
         ? AppBar(
             title: Text('User Screen'),
             actions: <Widget>[

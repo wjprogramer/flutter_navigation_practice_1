@@ -1,7 +1,14 @@
 import 'package:flutter/widgets.dart';
+import 'package:flutter_navigation_practice_1/core/authentication/authentication_manager.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  bool _isLoggedIn = false;
+  Future<bool> login() {
+    AuthenticationManager.instance.isLoggedIn = true;
+    return Future.value(true);
+  }
 
-  bool get isLoggedIn => _isLoggedIn;
+  Future<void> logout() {
+    AuthenticationManager.instance.isLoggedIn = false;
+    return Future.value();
+  }
 }
