@@ -5,15 +5,15 @@ import 'package:flutter_navigation_practice_1/screens/book_details_screen.dart';
 import 'package:flutter_navigation_practice_1/screens/book_list_screen.dart';
 import 'package:flutter_navigation_practice_1/screens/unknown_screen.dart';
 
-import 'book_route_path.dart';
+import 'app_config.dart';
 
 /// The generic type defined on RouterDelegate is BookRoutePath, which
 /// contains all the state needed to decide which pages to show.
 ///
 /// In this example, the app state is stored directly on the RouterDelegate,
 /// but could also be separated into another class.
-class BookRouterDelegate extends RouterDelegate<BookRoutePath>
-    with ChangeNotifier, PopNavigatorRouterDelegateMixin<BookRoutePath> {
+class BookRouterDelegate extends RouterDelegate<AppConfig>
+    with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppConfig> {
   final GlobalKey<NavigatorState> navigatorKey;
 
   Book _selectedBook;
@@ -29,13 +29,13 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
 
   /// In order to show the correct path in the URL, we need to return a
   /// BookRoutePath based on the current state of the app
-  BookRoutePath get currentConfiguration {
+  AppConfig get currentConfiguration {
     if (show404) {
-      return BookRoutePath.unknown();
+      return AppConfig.unknown();
     }
     return _selectedBook == null
-        ? BookRoutePath.home()
-        : BookRoutePath.details(books.indexOf(_selectedBook));
+        ? AppConfig.home()
+        : AppConfig.details(books.indexOf(_selectedBook));
   }
 
   @override
@@ -92,7 +92,7 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
   /// `setNewRoutePath`, which gives our app the opportunity to update the
   /// app state based on the changes to the route:
   @override
-  Future<void> setNewRoutePath(BookRoutePath path) async {
+  Future<void> setNewRoutePath(AppConfig path) async {
     if (path.isUnknown) {
       _selectedBook = null;
       show404 = true;

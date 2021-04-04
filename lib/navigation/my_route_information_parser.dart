@@ -1,35 +1,35 @@
 import 'package:flutter/material.dart';
 
-import 'book_route_path.dart';
+import 'app_config.dart';
 
 /// The `RouteInformationParser` provides a hook to parse incoming routes
 /// (`RouteInformation`) and convert it into a user defined type
 /// (`BookRoutePath`). Use the `Uri` class to take care of the parsing
-class BookRouteInformationParser extends RouteInformationParser<BookRoutePath> {
+class BookRouteInformationParser extends RouteInformationParser<AppConfig> {
   @override
-  Future<BookRoutePath> parseRouteInformation(
+  Future<AppConfig> parseRouteInformation(
       RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location);
     // Handle '/'
     if (uri.pathSegments.length == 0) {
-      return BookRoutePath.home();
+      return AppConfig.home();
     }
 
     // Handle '/book/:id'
     if (uri.pathSegments.length == 2) {
-      if (uri.pathSegments[0] != 'book') return BookRoutePath.unknown();
+      if (uri.pathSegments[0] != 'book') return AppConfig.unknown();
       var remaining = uri.pathSegments[1];
       var id = int.tryParse(remaining);
-      if (id == null) return BookRoutePath.unknown();
-      return BookRoutePath.details(id);
+      if (id == null) return AppConfig.unknown();
+      return AppConfig.details(id);
     }
 
     // Handle unknown routes
-    return BookRoutePath.unknown();
+    return AppConfig.unknown();
   }
 
   @override
-  RouteInformation restoreRouteInformation(BookRoutePath path) {
+  RouteInformation restoreRouteInformation(AppConfig path) {
     if (path.isUnknown) {
       return RouteInformation(location: '/404');
     }
