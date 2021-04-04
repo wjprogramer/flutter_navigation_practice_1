@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_navigation_practice_1/models/book.dart';
+import 'package:flutter_navigation_practice_1/navigation/transitions/no_animation_transition_delegate.dart';
 import 'package:flutter_navigation_practice_1/screens/book_details_screen.dart';
 import 'package:flutter_navigation_practice_1/screens/book_list_screen.dart';
 import 'package:flutter_navigation_practice_1/screens/unknown_screen.dart';
@@ -76,11 +77,14 @@ class BookRouterDelegate extends RouterDelegate<BookRoutePath>
 
       return true;
     }
+    
+    TransitionDelegate transitionDelegate = NoAnimationTransitionDelegate();
 
     return Navigator(
       key: navigatorKey,
       pages: pages,
       onPopPage: onPopPage,
+      transitionDelegate: transitionDelegate,
     );
   }
 

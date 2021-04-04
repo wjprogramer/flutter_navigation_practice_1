@@ -24,10 +24,6 @@ class _BooksAppState extends State<BooksApp> {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Books App',
-      // home: Navigator(
-      //   pages: pages,
-      //   onPopPage: onPopPage,
-      // ),
       routerDelegate: _routerDelegate,
       routeInformationParser: _routeInformationParser,
     );
