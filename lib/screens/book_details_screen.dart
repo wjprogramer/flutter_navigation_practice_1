@@ -5,7 +5,7 @@ class BookDetailsPage extends Page {
   final Book book;
 
   BookDetailsPage({
-    this.book,
+    @required this.book,
   }) : super(key: ValueKey(book));
 
   Route createRoute(BuildContext context) {
