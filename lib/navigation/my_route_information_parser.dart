@@ -5,7 +5,7 @@ import 'app_config.dart';
 /// The `RouteInformationParser` provides a hook to parse incoming routes
 /// (`RouteInformation`) and convert it into a user defined type
 /// (`BookRoutePath`). Use the `Uri` class to take care of the parsing
-class BookRouteInformationParser extends RouteInformationParser<AppConfig> {
+class MyRouteInformationParser extends RouteInformationParser<AppConfig> {
   @override
   Future<AppConfig> parseRouteInformation(
       RouteInformation routeInformation) async {

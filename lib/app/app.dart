@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_navigation_practice_1/models/book.dart';
 import 'package:flutter_navigation_practice_1/navigation/my_route_information_parser.dart';
 import 'package:flutter_navigation_practice_1/navigation/my_router_delegate.dart';
-import 'package:flutter_navigation_practice_1/screens/book_details_screen.dart';
-import 'package:flutter_navigation_practice_1/screens/book_list_screen.dart';
-import 'package:flutter_navigation_practice_1/screens/unknown_screen.dart';
 
 class BooksApp extends StatefulWidget {
   @override
@@ -13,8 +9,8 @@ class BooksApp extends StatefulWidget {
 
 class _BooksAppState extends State<BooksApp> {
 
-  final _routerDelegate = BookRouterDelegate();
-  final _routeInformationParser = BookRouteInformationParser();
+  final _routerDelegate = MyRouterDelegate();
+  final _routeInformationParser = MyRouteInformationParser();
 
   void initState() {
     super.initState();
@@ -23,6 +19,7 @@ class _BooksAppState extends State<BooksApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Books App',
       routerDelegate: _routerDelegate,
       routeInformationParser: _routeInformationParser,

@@ -12,7 +12,7 @@ import 'app_config.dart';
 ///
 /// In this example, the app state is stored directly on the RouterDelegate,
 /// but could also be separated into another class.
-class BookRouterDelegate extends RouterDelegate<AppConfig>
+class MyRouterDelegate extends RouterDelegate<AppConfig>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppConfig> {
   final GlobalKey<NavigatorState> navigatorKey;
 
@@ -25,7 +25,7 @@ class BookRouterDelegate extends RouterDelegate<AppConfig>
     Book('Fahrenheit 451', 'Ray Bradbury'),
   ];
 
-  BookRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  MyRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
 
   /// In order to show the correct path in the URL, we need to return a
   /// BookRoutePath based on the current state of the app
