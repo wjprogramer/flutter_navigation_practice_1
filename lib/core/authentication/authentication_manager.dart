@@ -1,6 +1,7 @@
 // A singleton, like a global variable
 class AuthenticationManager {
   bool isLoggedIn = false;
+  String error = '';
 
   AuthenticationManager._privateConstructor();
 

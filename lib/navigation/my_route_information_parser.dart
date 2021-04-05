@@ -10,18 +10,26 @@ class MyRouteInformationParser extends RouteInformationParser<AppConfig> {
   Future<AppConfig> parseRouteInformation(
       RouteInformation routeInformation) async {
     final uri = Uri.parse(routeInformation.location);
-    // Handle '/'
-    if (uri.pathSegments.length == 0) {
-      return AppConfig.home();
+    // Handle '/' and '/book'
+    if (uri.pathSegments.length == 0 ||
+        (uri.pathSegments.length == 1 &&
+            uri.pathSegments[0] == AppConfig.book().uri.pathSegments[0])) {
+      return AppConfig.book();
+    }
+
+    if ((uri.pathSegments.length == 1 &&
+        uri.pathSegments[0] == AppConfig.user().uri.pathSegments[0])) {
+      return AppConfig.user();
     }
 
     // Handle '/book/:id'
     if (uri.pathSegments.length == 2) {
-      if (uri.pathSegments[0] != 'book') return AppConfig.unknown();
-      var remaining = uri.pathSegments[1];
-      var id = int.tryParse(remaining);
-      if (id == null) return AppConfig.unknown();
-      return AppConfig.details(id);
+      if (uri.pathSegments[0] == AppConfig.book().uri.pathSegments[0]) {
+        var remaining = uri.pathSegments[1];
+        var id = int.tryParse(remaining);
+        if (id == null) return AppConfig.unknown();
+        return AppConfig.bookDetail(id);
+      }
     }
 
     // Handle unknown routes
@@ -31,13 +39,16 @@ class MyRouteInformationParser extends RouteInformationParser<AppConfig> {
   @override
   RouteInformation restoreRouteInformation(AppConfig path) {
     if (path.isUnknown) {
-      return RouteInformation(location: '/404');
+      return RouteInformation(location: AppConfig.unknown().uri.path);
     }
-    if (path.isHomePage) {
-      return RouteInformation(location: '/');
+    if (path.isBookSection) {
+      return RouteInformation(location: AppConfig.book().uri.path);
     }
-    if (path.isDetailsPage) {
-      return RouteInformation(location: '/book/${path.id}');
+    if (path.isBookDetailSection) {
+      return RouteInformation(location: AppConfig.bookDetail(path.bookId).uri.path);
+    }
+    if (path.isUserSection) {
+      return RouteInformation(location: AppConfig.user().uri.path);
     }
     return null;
   }

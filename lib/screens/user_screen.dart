@@ -24,28 +24,30 @@ class _UserScreenState extends BaseScreenState<UserScreen> {
       ),
     );
 
-    // if (AuthenticationManager.instance.isLoggedIn) {
-    //   column.add(Text("You are connected"));
-    // } else {
-    //   column.add(
-    //     Padding(
-    //       padding: const EdgeInsets.all(8.0),
-    //       child: Text('Enter email address'),
-    //     ),
-    //   );
-    //   column.add(Padding(
-    //     padding: const EdgeInsets.all(8.0),
-    //     child: Text('Enter password'),
-    //   ));
-    //   column.add(
-    //     RaisedButton(
-    //       onPressed: () {
-    //         this.doLogin();
-    //       },
-    //       child: Text('Login'),
-    //     ),
-    //   );
-    // }
+    if (AuthenticationManager.instance.isLoggedIn) {
+      column.add(Text("You are connected"));
+    } else {
+      column.add(
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('Enter email address'),
+        ),
+      );
+      column.add(
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text('Enter password'),
+        )
+      );
+      column.add(
+        TextButton(
+          onPressed: () {
+            this.doLogin();
+          },
+          child: Text('Login'),
+        ),
+      );
+    }
     return column;
   }
 
@@ -76,11 +78,11 @@ class _UserScreenState extends BaseScreenState<UserScreen> {
 
   @override
   void onLoggedIn() {
-    widget.refresh(null);
+    // widget.refresh(null);
   }
 
   @override
   void onLoggedOut() {
-    widget.refresh(null);
+    // widget.refresh(null);
   }
 }

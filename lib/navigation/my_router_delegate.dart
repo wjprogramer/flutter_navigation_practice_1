@@ -4,6 +4,7 @@ import 'package:flutter_navigation_practice_1/navigation/transitions/no_animatio
 import 'package:flutter_navigation_practice_1/screens/book_details_screen.dart';
 import 'package:flutter_navigation_practice_1/screens/book_list_screen.dart';
 import 'package:flutter_navigation_practice_1/screens/unknown_screen.dart';
+import 'package:flutter_navigation_practice_1/screens/user_screen.dart';
 
 import 'app_config.dart';
 
@@ -16,8 +17,8 @@ class MyRouterDelegate extends RouterDelegate<AppConfig>
     with ChangeNotifier, PopNavigatorRouterDelegateMixin<AppConfig> {
   final GlobalKey<NavigatorState> navigatorKey;
 
-  Book _selectedBook;
-  bool show404 = false;
+  AppConfig currentState = AppConfig.book();
+  AppConfig previousState;
 
   List<Book> books = [
     Book('Stranger in a Strange Land', 'Robert A. Heinlein'),
@@ -25,66 +26,77 @@ class MyRouterDelegate extends RouterDelegate<AppConfig>
     Book('Fahrenheit 451', 'Ray Bradbury'),
   ];
 
-  MyRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>();
+  MyRouterDelegate() : navigatorKey = GlobalKey<NavigatorState>() {
+    print("1. BookRouterDelegate initialized");
+    print(this);
+    assert(AppConfig.book() == this.currentConfiguration);
+  }
 
   /// In order to show the correct path in the URL, we need to return a
   /// BookRoutePath based on the current state of the app
-  AppConfig get currentConfiguration {
-    if (show404) {
-      return AppConfig.unknown();
-    }
-    return _selectedBook == null
-        ? AppConfig.home()
-        : AppConfig.details(books.indexOf(_selectedBook));
-  }
+  AppConfig get currentConfiguration => currentState;
 
-  @override
-  Widget build(BuildContext context) {
-
-    /// ## `Page`
-    ///
-    /// 當 `Page` 列表有變動，`Navigator` 會更新路徑的堆疊、符合 (match) 路徑
-    ///
-    /// - Navigator 會根據 `key` 不同，判斷成不同的 `Page`
-    final pages = [
+  List<Page<dynamic>> buildPage() {
+    List<Page<dynamic>> pages = [];
+    pages.add(
       MaterialPage(
         key: ValueKey('BooksListPage'),
         child: BooksListScreen(
           books: books,
-          onTapped: _handleBookTapped,
         ),
       ),
-      if (show404)
-        MaterialPage(key: ValueKey('UnknownPage'), child: UnknownScreen())
-      else if (_selectedBook != null)
-        BookDetailsPage(book: _selectedBook),
-    ];
+    );
+    if (currentState.uri.pathSegments[0] ==
+        AppConfig.book().uri.pathSegments[0]) {
+      if (currentState.bookId != null)
+        pages.add(
+          MaterialPage(
+              key: ValueKey('BookListPageId' + currentState.bookId.toString()),
+              child: BookDetailsScreen(book: books[currentState.bookId])),
+        );
+    } else if (currentState.uri.pathSegments[0] ==
+        AppConfig.user().uri.pathSegments[0]) {
+      pages.add(MaterialPage(
+          key: ValueKey('LoginScreen'),
+          child: UserScreen(
+            refresh: _notifyListeners,
+          )));
+    }
+    if (currentState.isUnknown)
+      pages.add(
+          MaterialPage(key: ValueKey('UnknownPage'), child: UnknownScreen()));
+    return pages;
+  }
 
-    /// ## `onPopPage`
-    ///
-    /// 會在呼叫 `Navigator.pop()` 之後被呼叫
+  @override
+  Widget build(BuildContext context) {
+    print("BookRouterDelegate building...");
+    print(this.currentState);
+
     bool onPopPage(Route<dynamic> route, result) {
-      // 1. `didPop` return true if the pop succeeded
-      // 2. It’s important to check whether didPop fails before updating the app state.
       if (!route.didPop(result)) {
         return false;
+      } else if (currentState.uri.pathSegments[0] ==
+          AppConfig.book().uri.pathSegments[0] &&
+          currentState.bookId != null) {
+        currentState = AppConfig.book();
+      } else if (currentState.uri.path == AppConfig.user().uri.path) {
+        currentState = previousState;
+        previousState = null;
+      } else {
+        currentState = AppConfig.unknown();
       }
-
-      // Update the list of pages by setting _selectedBook to null
-      _selectedBook = null;
-      show404 = false;
       notifyListeners();
-
       return true;
     }
     
-    TransitionDelegate transitionDelegate = NoAnimationTransitionDelegate();
+    // TransitionDelegate transitionDelegate = NoAnimationTransitionDelegate();
 
     return Navigator(
       key: navigatorKey,
-      pages: pages,
+      pages: buildPage(),
       onPopPage: onPopPage,
-      transitionDelegate: transitionDelegate,
+      // transitionDelegate: transitionDelegate,
     );
   }
 
@@ -92,36 +104,23 @@ class MyRouterDelegate extends RouterDelegate<AppConfig>
   /// `setNewRoutePath`, which gives our app the opportunity to update the
   /// app state based on the changes to the route:
   @override
-  Future<void> setNewRoutePath(AppConfig path) async {
-    if (path.isUnknown) {
-      _selectedBook = null;
-      show404 = true;
-      return;
-    }
-
-    if (path.isDetailsPage) {
-      if (path.id < 0 || path.id > books.length - 1) {
-        show404 = true;
-        return;
-      }
-
-      _selectedBook = books[path.id];
-    } else {
-      _selectedBook = null;
-    }
-
-    show404 = false;
+  Future<void> setNewRoutePath(AppConfig newState) async {
+    currentState = newState;
+    return;
   }
 
-  /// The `onPopPage` callback now uses `notifyListeners` instead of
-  /// `setState`.
-  ///
-  /// When the `RouterDelegate` notifies its listeners, the `Router` widget
-  /// is likewise notified that the `RouterDelegate's` `currentConfiguration`
-  /// has changed and that its `build` method needs to be called again to
-  /// build a new `Navigator`.
-  void _handleBookTapped(Book book) {
-    _selectedBook = book;
+  void handleBookTapped(Book book) {
+    currentState = AppConfig.bookDetail(books.indexOf(book));
+    notifyListeners();
+  }
+
+  void handleUserTapped(void _) {
+    previousState = currentState;
+    currentState = AppConfig.user();
+    notifyListeners();
+  }
+
+  void _notifyListeners(void nothing) {
     notifyListeners();
   }
 }

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_navigation_practice_1/core/authentication/authentication_manager.dart';
 import 'package:flutter_navigation_practice_1/view_models/auth_view_model.dart';
 import 'package:provider/provider.dart';
 
 abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
+
+  bool _hasFirstBuilt = false;
 
   AuthViewModel authViewModel;
 
@@ -12,6 +15,9 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _hasFirstBuilt = true;
+    });
   }
 
   @override
@@ -43,23 +49,25 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
   Widget build(BuildContext context) {
     authViewModel = context.watch<AuthViewModel>();
 
-    // return BlocListener<AuthenticationBloc, AuthenticationState>(
-    //   listener: (context, state) {
-    //     if (state is LoggedOutState) {
-    //       this.onLoggedOut();
-    //     } else if (state is AuthenticationSuccessState) {
-    //       this.onLoggedIn();
-    //     }
-    //   },
-    //   child: ,
-    // );
-
-    return Scaffold(
-      backgroundColor: this.backgroundColor,
-      appBar: this.buildAppBar(context),
-      body: this.buildScreen(context),
-      bottomNavigationBar: this.buildBottomNavigationBar(context),
-      floatingActionButton: this.buildFloatingActionButton(context),
+    return Consumer<AuthViewModel>(
+      builder: (_, auth, __) => Scaffold(
+        backgroundColor: this.backgroundColor,
+        appBar: this.buildAppBar(context),
+        body: Consumer<AuthViewModel>(
+          builder: (_, auth, __) {
+            if (_hasFirstBuilt) {
+              if (AuthenticationManager.instance.isLoggedIn) {
+                this.onLoggedIn();
+              } else {
+                this.onLoggedOut();
+              }
+            }
+            return this.buildScreen(context);
+          },
+        ),
+        bottomNavigationBar: this.buildBottomNavigationBar(context),
+        floatingActionButton: this.buildFloatingActionButton(context),
+      ),
     );
   }
 
@@ -100,14 +108,14 @@ abstract class BaseScreenState<T extends StatefulWidget> extends State<T> {
   /// Sends a log in event
   ///
   void doLogin() {
-    // TODO: authViewModel.login();
+    authViewModel.login();
   }
 
   ///
   /// Sends a logout event
   ///
   void doLogout() {
-    // TODO: authViewModel.logout();
+    authViewModel.logout();
   }
 
   ///

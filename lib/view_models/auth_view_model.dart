@@ -1,14 +1,28 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_navigation_practice_1/core/authentication/authentication_manager.dart';
+import 'package:flutter_navigation_practice_1/resource/login_repository.dart';
 
 class AuthViewModel extends ChangeNotifier {
-  Future<bool> login() {
-    AuthenticationManager.instance.isLoggedIn = true;
-    return Future.value(true);
+  final LoginRepository _repository;
+
+  AuthViewModel(this._repository);
+
+  void login() async {
+    final manager = AuthenticationManager.instance;
+
+    final loginResult = await _repository.login();
+    manager.isLoggedIn = loginResult;
+    if (!loginResult) {
+      manager.error = 'Login Failed';
+    }
+
+    notifyListeners();
   }
 
-  Future<void> logout() {
-    AuthenticationManager.instance.isLoggedIn = false;
-    return Future.value();
+  void logout() async {
+    final manager = AuthenticationManager.instance;
+    await _repository.logout();
+    manager.isLoggedIn = false;
+    notifyListeners();
   }
 }

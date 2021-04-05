@@ -1,24 +1,44 @@
+import 'package:equatable/equatable.dart';
+
 /// The `RouteInformationParser` parses the route information into a
 /// user-defined data type
 ///
 /// In this app, all of the routes in the app can be represented using a
 /// single class. Instead, you might choose to use different classes that
 /// implement a superclass, or manage the route information in another way.
-class AppConfig {
-  final int id;
-  final bool isUnknown;
+class AppConfig extends Equatable {
+  final int bookId;
+  final Uri uri;
 
-  AppConfig.home()
-      : id = null,
-        isUnknown = false;
+  AppConfig.user()
+      : uri = Uri(path: "/user"),
+        bookId = null;
 
-  AppConfig.details(this.id) : isUnknown = false;
+  AppConfig.book()
+      : uri = Uri(path: "/book"),
+        bookId = null;
+
+  AppConfig.bookDetail(this.bookId)
+      : uri = Uri(path: "/book/${bookId.toString()}");
 
   AppConfig.unknown()
-      : id = null,
-        isUnknown = true;
+      : uri = Uri(path: "/unknown"),
+        bookId = null;
 
-  bool get isHomePage => id == null;
+  bool get isUserSection => (uri == AppConfig.user().uri);
 
-  bool get isDetailsPage => id != null;
+  bool get isBookSection => (uri == AppConfig.book().uri);
+
+  bool get isBookDetailSection => (bookId != null);
+
+  bool get isUnknown => (uri == AppConfig.unknown().uri);
+
+  @override
+  String toString() {
+    return "AppConfig{ uriPath : " + uri.path + ", book id : " + bookId
+        .toString() + "}";
+  }
+
+  @override
+  List<Object> get props => [uri.path, bookId];
 }
