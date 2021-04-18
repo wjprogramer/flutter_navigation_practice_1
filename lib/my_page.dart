@@ -1,10 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'my_app.dart';
-
-void main() => runApp(MyApp());
-
 class MyPage<T> extends Page<T> {
   const MyPage({
     @required LocalKey key,
